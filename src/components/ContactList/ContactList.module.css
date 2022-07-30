@@ -1,0 +1,6 @@
+.item {
+  display: flex;
+}
+.title {
+  margin-right: 15px;
+}
