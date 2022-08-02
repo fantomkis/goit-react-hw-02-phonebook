@@ -2,7 +2,7 @@ import { Component } from 'react';
 import { nanoid } from 'nanoid';
 import ContactForm from './ContactForm/ContactForm';
 import ContactList from './ContactList/ContactList';
-
+import Filter from './Filter/Filter';
 export class App extends Component {
   state = {
     contacts: [
@@ -11,15 +11,26 @@ export class App extends Component {
       { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
       { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
     ],
-    name: '',
-    number: '',
+
     filter: '',
   };
-  handelChange = e => {
-    const { name, value } = e.target;
-    console.log(e);
-    this.setState({ [name]: value });
+
+  onAddContact = (name, number) => {
+    const repeatOfNames = this.state.contacts.find(
+      el => el.name.toLowerCase() === name.toLowerCase()
+    );
+    if (repeatOfNames) {
+      alert(`${name} is already is in contacts.`);
+      return;
+    }
+    this.setState(prev => ({
+      contacts: [
+        ...prev.contacts,
+        { id: nanoid(), name: name, number: number },
+      ],
+    }));
   };
+
   handleSubmit = e => {
     e.preventDefault();
     const { name, number } = this.state;
@@ -30,9 +41,25 @@ export class App extends Component {
       ],
     }));
   };
+  filterChang = e => {
+    this.setState({ filter: e.target.value });
+  };
+  onFilterContacts = () => {
+    const { contacts, filter } = this.state;
+    const filterContacts = contacts.filter(el =>
+      el.name.toLowerCase().includes(filter.toLowerCase())
+    );
+    return filterContacts;
+  };
+  onDeleteContact = id => {
+    this.setState(prev => ({
+      contacts: prev.contacts.filter(el => el.id !== id),
+    }));
+  };
 
   render() {
-    const { contacts } = this.state;
+    const { filter } = this.state;
+
     return (
       <div
         style={{
@@ -47,11 +74,15 @@ export class App extends Component {
       >
         <h1>Phonebook</h1>
         <ContactForm
-          handelChange={this.handelChange}
+          onAddContact={this.onAddContact}
           handleSubmit={this.handleSubmit}
         />
         <h2>Contacts</h2>
-        <ContactList contacts={contacts} />
+        <Filter filter={filter} filterChang={this.filterChang} />
+        <ContactList
+          contacts={this.onFilterContacts()}
+          onDeleteContact={this.onDeleteContact}
+        />
       </div>
     );
   }

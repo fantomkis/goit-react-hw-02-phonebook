@@ -1,21 +1,19 @@
 import React from 'react';
 import s from './ContactList.module.css';
 
-function ContactList({ contacts }) {
+function ContactList({ contacts, onDeleteContact }) {
   return (
     <>
-      <input
-        type="text"
-        name="filter"
-        pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-        required
-      />
-
       <ul>
         {contacts.map(({ id, name, number }) => (
           <li key={id} className={s.item}>
-            <p className={s.title}>{name}</p>
-            <p className="">{number}</p>
+            <p className={s.title}>
+              {name}:<span className="">{number}</span>
+            </p>
+
+            <button className={s.btn} onClick={() => onDeleteContact(id)}>
+              Delete
+            </button>
           </li>
         ))}
       </ul>
